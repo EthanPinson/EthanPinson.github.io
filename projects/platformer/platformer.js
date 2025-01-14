@@ -38,7 +38,21 @@ $(function () {
     // Create platforms
     // You must decide the x position, y position, width, and height of the platforms
     // example usage: createPlatform(x,y,width,height)
+    //debug();
+    createPlatform(50, 650, 200, 40)
+    createPlatform(500, 590, 50, 5)
+    createPlatform(350, 550, 100, 20)
+    createPlatform(420, 420, 100, 10)
 
+    createPlatform(300, 290, 100, 10)
+
+    createPlatform(650, 250, 50, 10)
+
+    createPlatform(900, 600, 50, 10)
+
+    createPlatform(1050, 675, 50, 10)
+
+    createPlatform(300, 690, 50, 10)
 
 
     
@@ -47,8 +61,13 @@ $(function () {
     // You must decide on the collectable type, the x position, the y position, the gravity, and the bounce strength
     // Your collectable choices are 'database' 'diamond' 'grace' 'kennedi' 'max' and 'steve'; more can be added if you wish
     // example usage: createCollectable(type, x, y, gravity, bounce)
+    collectableList.diamond.image = "../../dumbass.avif"
 
-
+    createCollectable("wahoocoin", 500, 500, 0, 0);
+    createCollectable("wahoomush", 300, 650, 0, 0);
+    createCollectable("wahoostar", 300, 250, 0, 0);
+    createCollectable("wahoopeng", 900, 550, 0, 0);
+    createCollectable("wahoocap", 1060, 630, 0, 0);
 
     
     // TODO 3
@@ -56,8 +75,9 @@ $(function () {
     // You must decide the wall you want the cannon on, the position on the wall, and the time between shots in milliseconds
     // Your wall choices are: 'top' 'left' 'right' and 'bottom'
     // example usage: createCannon(side, position, delay, width, height)
-
-
+    createCannon("right", 500, 900, 50, 40)
+    createCannon("right", 770, 700, 500, 40)
+    createCannon("right", 370, 700, 50, 20)
 
     
     /////////////////////////////////////////////////

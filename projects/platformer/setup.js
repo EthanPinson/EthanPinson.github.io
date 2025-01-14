@@ -97,4 +97,10 @@ var collectableList = {
   kennedi: { image: "images/collectables/kennedi-head.png" },
   max: { image: "images/collectables/max-head.png" },
   steve: { image: "images/collectables/steve-head.png" },
+  wahoocoin: { image: "images/collectables/wahoocoin.png" },
+  wahoomush: { image: "images/collectables/wahoomush.png" },
+  wahoostar: { image: "images/collectables/wahoostar.png" },
+  wahoopeng: { image: "images/collectables/wahoopeng.png" },
+  wahoocap: { image: "images/collectables/wahoocap.png" },
+  wahoobullet: { image: "images/collectables/wahoobullet.png" },
 };
