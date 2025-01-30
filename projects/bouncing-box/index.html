@@ -113,7 +113,8 @@
 			// number of times user has misclicked the box
 			let misclick_count = 0;
 
-			function handleBoxClick() {
+			function handleBoxClick(event) {
+				event.stopPropagation();
 				if (misclick_count >= 10) return;
 				positionX = Math.random() * (boardWidth - boxSize);
 				positionY = Math.random() * (boardHeight - boxSize);
