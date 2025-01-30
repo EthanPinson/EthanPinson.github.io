@@ -9,7 +9,7 @@
 		.box {
 			width: 70px;
 			height: 70px;
-			background-color: teal;
+			background-color: rgb(123, 236, 31);
 			font-size: 300%;
 			text-align: center;
 			user-select: none;
@@ -18,10 +18,15 @@
 			top: 100px;
 			/* Change me! */
 			left: 100px;
+			font-family: Impact;
+			background-image: url(../../canny_cat.jpg);
+			background-size: cover;
+			color: red;
 		}
 
 		.board {
 			height: 100vh;
+			background-color: black;
 		}
 	</style>
 	<!-- 	<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script> -->
@@ -46,14 +51,15 @@
 			var boardWidth = board.width();	// the maximum X-Coordinate of the screen
 
 			// Every 50 milliseconds, call the update Function (see below)
-			setInterval(update, 50);
+			const interval = setInterval(update, 10);
 
 			// Every time the box is clicked, call the handleBoxClick Function (see below)
 			box.on('click', handleBoxClick);
 
 			// moves the Box to a new position on the screen along the X-Axis
-			function moveBoxTo(newPositionX) {
+			function moveBoxTo(newPositionX, newPositionY) {
 				box.css("left", newPositionX);
+				box.css("top", newPositionY)
 			}
 
 			// changes the text displayed on the Box
@@ -65,10 +71,20 @@
 			/////////////////// YOUR CODE BELOW HERE /////////////////////////
 			//////////////////////////////////////////////////////////////////
 
-			// TODO 2 - Variable declarations 
+			// TODO 2 - Variable declarations
 			var positionX = 0;
+			var positionY = 0;
 			var points = 0;
-			var speed = 10;
+
+			let speedX = 0.1
+			let speedY = 0.1;
+
+			var boxSize = box.width();
+
+			let multiplier = 1.01;
+			let clickCount = 0;
+
+			var boardHeight = jQuery(window).height();
 
 
 			/* 
@@ -77,10 +93,15 @@
 			turn it around! 
 			*/
 			function update() {
-				positionX += speed;
-				moveBoxTo(positionX);
-				if (positionX < boardWidth && positionX > 0) { return }
-				speed *= -1;
+				positionX += speedX;
+				positionY += speedY;
+				moveBoxTo(positionX, positionY);
+				if (positionX > boardWidth - boxSize || positionX < 0) {
+					speedX *= -1;
+				}
+				if (positionY > boardHeight - boxSize || positionY < 0) {
+					speedY *= -1;
+				}
 			};
 
 			/* 
@@ -88,19 +109,36 @@
 			it should increase the points total, increase the speed, and move the box to
 			the left side of the screen.
 			*/
+
+			// number of times user has misclicked the box
+			let misclick_count = 0;
+
 			function handleBoxClick() {
-				positionX = 0;
+				if (misclick_count >= 10) return;
+				positionX = Math.random() * (boardWidth - boxSize);
+				positionY = Math.random() * (boardHeight - boxSize);
 				points++;
 
-				speed += speed >= 0 ? 3 : -3;
-				
+				speedX += speedX >= 0 ? multiplier : -multiplier;
+				speedY += speedY >= 0 ? multiplier : -multiplier;
+
 				changeBoxText(points);
+
+				// challenge 5
+				clickCount++
+				if (clickCount % 3 === 0) {
+					multiplier += 0.05;
+				}
 
 			};
 
-
-
-
+			// challenge 6
+			board.on('click', function() {
+				misclick_count++;
+				if (misclick_count < 10) return;
+				clearInterval(interval);
+				box.css('background-image', 'url(../../uncanny_cat.webp)');
+			});
 
 		})();
 	</script>
