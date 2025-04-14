@@ -43,6 +43,9 @@
     <script src="js/levelData.js"></script>
     <script src="js/runLevels.js"></script>
 
+    <script src="js/entity_data.js"></script>
+    <script src="js/background_util.js"></script>
+
     <!--Load Additional Scripts Here-->
   </head>
   <body>
@@ -52,8 +55,8 @@
     <script id="index">
       (function () {
         "use strict";
-        background(window);
-        makeLevelData(window);
+        background(window, background_util);
+        makeLevelData(window, entity_data);
         runLevels(window);
         init(window);
       })();
