@@ -78,7 +78,7 @@ var runLevels = function (window) {
       // DO NOT EDIT CODE BELOW HERE
       //////////////////////////////////////////////
       if (++currentLevel === levelData.length) {
-        startLevel = () => {
+        startLevel = () => {qqqqqqq:
           console.log("Congratulations!");
         };
       }
