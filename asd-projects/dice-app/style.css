@@ -1,0 +1,16 @@
+.die {
+    height: 115px;
+    width: 115px;
+    background: lightgray;
+    position: absolute;
+    border: 2px black solid;
+    border-radius: 10px;
+}
+
+.dot {
+    height: 15px;
+    width: 15px;
+    background: black;
+    position: absolute;
+    border-radius: 15px;
+}
