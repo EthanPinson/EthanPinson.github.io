@@ -13,11 +13,16 @@ var highScoreElement = $("#highScore");
 var score = 0; // variable to keep track of the score
 var started = false; // variable to keep track of whether the game has started
 
-// TODO 4, Part 1: Create the apple variable
+// CHALLENGE
+const colors = ["red", "orange", "yellow", "green", "blue", "purple"];
+let colorIndex = 0;
+let isReversed = false;
 
+// TODO 4, Part 1: Create the apple variable
+var apple = {};
 
 // TODO 5, Part 1: Create the snake variable
-
+const snake = {};
 
 // Constant Variables
 var ROWS = 20;
@@ -47,15 +52,22 @@ $("body").on("keydown", handleKeyDown);
 init();
 
 function init() {
+  //CHALLENGE
+  isReversed = false;
+  colorIndex = 0;
+
   // TODO 5, Part 2: initialize the snake
-  
+  snake.body = [];
+  makeSnakeSquare(10, 10);
+  makeSnakeSquare(10, 9);
+  makeSnakeSquare(10, 8);
+  snake.head = snake.body[0];
   
   // TODO 4, Part 3: initialize the apple
-
+  makeApple();
 
   // TODO 6, Part 1: Initialize the interval
-
-
+  updateInterval = setInterval(update, 100);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -68,10 +80,9 @@ function init() {
  */
 function update() {
   // TODO 6, Part 2: Fill in the update function's code block
-
-
-
-
+  if (started) moveSnake();
+  if (hasHitWall() || hasCollidedWithSnake()) endGame();
+  if (hasCollidedWithApple()) handleAppleCollision();
 }
 
 function checkForNewDirection(event) {
@@ -87,6 +98,11 @@ function checkForNewDirection(event) {
   }
 
   // FILL IN THE REST
+  switch(activeKey) {
+    case KEY.RIGHT: snake.head.direction = "right"; break;
+    case KEY.UP: snake.head.direction = "up"; break;
+    case KEY.DOWN: snake.head.direction = "down"; break;
+  }
 
   // console.log(snake.head.direction);     // uncomment me!
 }
@@ -100,10 +116,10 @@ function moveSnake() {
     stored in the Array snake.body and each part knows its current 
     column/row properties. 
   */
-
-
-
-
+  for (let i = snake.body.length - 1; i > 0; i--) {
+    moveBodyAToBodyB(snake.body[i], snake.body[i - 1]);
+    repositionSquare(snake.body[i]);
+  }
 
   //Before moving the head, check for a new direction from the keyboard input
   checkForNewDirection();
@@ -114,14 +130,20 @@ function moveSnake() {
     HINT: The snake's head will need to move forward 1 square based on the value
     of snake.head.direction which may be one of "left", "right", "up", or "down"
   */
-
-
-
-
+  switch(snake.head.direction) {
+    case "left": snake.head.column--; break;
+    case "right": snake.head.column++; break;
+    case "up": snake.head.row--; break;
+    case "down": snake.head.row++;
+  }
+  repositionSquare(snake.head);
 }
 
 // TODO 9: Create a new helper function
-
+function moveBodyAToBodyB(bodyA, bodyB) {
+  bodyA.row = bodyB.row;
+  bodyA.column = bodyB.column;
+}
 
 
 
@@ -133,10 +155,8 @@ function hasHitWall() {
     
     HINT: What will the row and column of the snake's head be if this were the case?
   */
-
-
-
-  return false;
+  if (snake.head.row < 0 || snake.head.row > ROWS - 1) return true;
+  return snake.head.column < 0 || snake.head.column > COLUMNS - 1
 }
 
 function hasCollidedWithApple() {
@@ -146,10 +166,7 @@ function hasCollidedWithApple() {
     
     HINT: Both the apple and the snake's head are aware of their own row and column
   */
-
-
-
-  return false;
+  return snake.head.row == apple.row && snake.head.column == apple.column;
 }
 
 function handleAppleCollision() {
@@ -165,6 +182,9 @@ function handleAppleCollision() {
   var column = snake.tail.column;
   
   makeSnakeSquare(row, column);
+
+  // CHALLENGE
+  if (score && score % 10 == 0) isReversed = !isReversed;
 }
 
 function hasCollidedWithSnake() {
@@ -175,7 +195,11 @@ function hasCollidedWithSnake() {
     HINT: Each part of the snake's body is stored in the snake.body Array. The
     head and each part of the snake's body also knows its own row and column.
   */
-
+  for (let i = 1; i < snake.body.length; i++) {
+    if (snake.head.row == snake.body[i].row) {
+      if (snake.head.column == snake.body[i].column) return true;
+    }
+  }
 
 
   return false;
@@ -207,9 +231,11 @@ function endGame() {
  */
 function makeApple() {
   // TODO 4, Part 2: Fill in this function's code block
-
-
-
+  apple.element = $("<div class=apple>").appendTo(board);
+  const random_pos = getRandomAvailablePosition();
+  apple.row = random_pos.row;
+  apple.column = random_pos.column;
+  repositionSquare(apple);
 }
 
 /* Create an HTML element for a snakeSquare using jQuery. Then, given a row and
@@ -218,10 +244,24 @@ function makeApple() {
  */
 function makeSnakeSquare(row, column) {
   // TODO 5, Part 2: Fill in this function's code block
+  const snakeSquare = {};
+  snakeSquare.element = $("<div class=snake>").appendTo(board);
+  snakeSquare.row = row;
+  snakeSquare.column = column;
 
+  repositionSquare(snakeSquare);
 
+  if (!snake.body.length) {
+    snakeSquare.element.attr("id", "snake-head");
+  }
 
+  snake.body.push(snakeSquare);
+  snake.tail = snakeSquare;
 
+  // CHALLENGE
+  snake.tail.element.css("backgroundColor", colors[colorIndex]);
+  colorIndex++;
+  colorIndex %= colors.length;
 }
 
 /* 
@@ -237,7 +277,17 @@ function makeSnakeSquare(row, column) {
 */
 function handleKeyDown(event) {
   // TODO 7: make the handleKeyDown function register which key is pressed
+  activeKey = event.which;
 
+  // CHALLENGE
+  if (isReversed) {
+    switch(event.which) {
+      case KEY.LEFT: activeKey = KEY.RIGHT; break;
+      case KEY.RIGHT: activeKey = KEY.LEFT; break;
+      case KEY.UP: activeKey = KEY.DOWN; break;
+      case KEY.DOWN: activeKey = KEY.UP; break;
+    }
+  }
 
   // If a valid direction key is pressed, start the game
   if (
@@ -282,9 +332,11 @@ function getRandomAvailablePosition() {
       not occupied by a snakeSquare in the snake's body. If it is then set 
       spaceIsAvailable to false so that a new position is generated.
     */
-
-
-
+    for (part in snake.body) {
+      if (part.row == randomPosition.row) {
+        spaceIsAvailable = part.column != randomPosition.column;
+      }
+    }
   }
 
   return randomPosition;
