@@ -86,22 +86,26 @@ function update() {
 }
 
 function checkForNewDirection(event) {
+  console.log(snake.head.direction)
   /* 
   TODO 7: Update snake.head.direction based on the value of activeKey.
   
   BONUS: Only allow direction changes to take place if the new direction is
   perpendicular to the current direction
   */
-
-  if (activeKey === KEY.LEFT) {
-    snake.head.direction = "left";
-  }
-
-  // FILL IN THE REST
   switch(activeKey) {
-    case KEY.RIGHT: snake.head.direction = "right"; break;
-    case KEY.UP: snake.head.direction = "up"; break;
-    case KEY.DOWN: snake.head.direction = "down"; break;
+    case KEY.RIGHT:
+      if (snake.head.direction != "left") snake.head.direction = "right";
+      break;
+    case KEY.LEFT:
+      if (!snake.head.direction) snake.head.direction = "right";
+      if (snake.head.direction != "right") snake.head.direction = "left";
+      break;
+    case KEY.UP:
+      if (snake.head.direction != "down") snake.head.direction = "up";
+      break;
+    case KEY.DOWN:
+      if (snake.head.direction != "up") snake.head.direction = "down";
   }
 
   // console.log(snake.head.direction);     // uncomment me!
