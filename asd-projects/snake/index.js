@@ -14,7 +14,7 @@ var score = 0; // variable to keep track of the score
 var started = false; // variable to keep track of whether the game has started
 
 // CHALLENGE
-const colors = ["red", "orange", "yellow", "green", "blue", "purple"];
+const colors = ["red", "OrangeRed", "orange", "yellow", "GreenYellow", "YellowGreen", "green", "blue", "purple"];
 let colorIndex = 0;
 let isReversed = false;
 
