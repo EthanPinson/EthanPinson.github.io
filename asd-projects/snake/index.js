@@ -321,23 +321,21 @@ function repositionSquare(square) {
 /* Returns a (row,column) Object that is not occupied by another game component
  */
 function getRandomAvailablePosition() {
-  const randomPosition = {};
   /* Generate random positions until one is found that doesn't overlap with the snake */
   root: while (true) {
-    randomPosition.column = Math.floor(Math.random() * COLUMNS);
-    randomPosition.row = Math.floor(Math.random() * ROWS);
+    const column = Math.floor(Math.random() * COLUMNS);
+    const row = Math.floor(Math.random() * ROWS);
     /*
       TODO 14: After generating the random position determine if that position is
       not occupied by a snakeSquare in the snake's body. If it is then set 
       spaceIsAvailable to false so that a new position is generated.
     */
     for (part of snake.body) {
-      if (part.row != randomPosition.row) continue;
-      if (part.column == randomPosition.column) break root;
+      if (part.row != row) continue;
+      if (part.column == column) break root;
     }
-    break;
+    return { column, row };
   }
-  return randomPosition;
 }
 
 function calculateHighScore() {
