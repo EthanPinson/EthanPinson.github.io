@@ -327,7 +327,7 @@ function getRandomAvailablePosition() {
     */
     for (part of snake.body) {
       if (part.column != column) continue;
-      if (part.row == row) break root;
+      if (part.row == row) continue root;
     }
     return { column, row };
   }
