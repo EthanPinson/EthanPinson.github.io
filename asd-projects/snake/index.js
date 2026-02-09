@@ -25,8 +25,8 @@ var apple = {};
 const snake = {};
 
 // Constant Variables
-var ROWS = 20;
-var COLUMNS = 20;
+var ROWS = 21;
+var COLUMNS = 21;
 var SQUARE_SIZE = 20;
 var KEY = {
   LEFT: 37,
@@ -55,6 +55,7 @@ function init() {
   //CHALLENGE
   isReversed = false;
   colorIndex = 0;
+  $('h1').css('color', 'white');
 
   // TODO 5, Part 2: initialize the snake
   snake.body = [];
@@ -189,6 +190,7 @@ function handleAppleCollision() {
 
   // CHALLENGE
   if (score && score % 10 == 0) isReversed = !isReversed;
+  $('h1').css('color', isReversed ? 'red' : 'white');
 }
 
 function hasCollidedWithSnake() {

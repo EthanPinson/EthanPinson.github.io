@@ -1,17 +1,30 @@
 
 body {
-  background-color: darkgreen;
+  background-image: url(./bg.jpeg);
+  background-size: cover;
 }
 
 #board {
   width: 440px;
   height: 440px;
-  border: 1px solid white;
-  background-color: black;
+  border: 5px inset white;
+  background: black;
+}
+
+.text-holder {
+  width: 450px;
+  display: inline-flex;
+  justify-content: space-between
 }
 
 #score, #highScore {
   color: white;
+  font-family: monospace;
+  text-shadow:
+    -2px -2px 0 black,
+     2px -2px 0 black,
+    -2px  2px 0 black,
+     2px  2px 0 black;
 }
 
 .snake, .apple {
@@ -32,6 +45,6 @@ body {
 }
 
 .apple {
-  background-color: red;
+  background-color: rgb(255, 128, 128);
   z-index: 1;
 }
