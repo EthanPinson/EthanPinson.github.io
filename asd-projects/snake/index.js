@@ -86,8 +86,7 @@ function update() {
   if (hasCollidedWithApple()) handleAppleCollision();
 }
 
-function checkForNewDirection(event) {
-  console.log(snake.head.direction)
+function checkForNewDirection() {
   /* 
   TODO 7: Update snake.head.direction based on the value of activeKey.
   
@@ -111,6 +110,18 @@ function checkForNewDirection(event) {
 
   // console.log(snake.head.direction);     // uncomment me!
 }
+
+/* Given a gameSquare (which may be a snakeSquare or the apple), position
+ * the gameSquare on the screen.
+ */
+function repositionSquare({ element, column, row }) {
+  // position the square on the screen according to the row and column
+  element.css({
+    left: column * SQUARE_SIZE + 20,
+    top: row * SQUARE_SIZE + 20
+  });
+}
+
 
 function moveSnake() {
   /* 
@@ -149,9 +160,6 @@ function moveBodyAToBodyB(bodyA, bodyB) {
   bodyA.row = bodyB.row;
   bodyA.column = bodyB.column;
 }
-
-
-
 
 function hasHitWall() {
   /* 
@@ -305,21 +313,6 @@ function handleKeyDown(event) {
   }
 }
 
-/* Given a gameSquare (which may be a snakeSquare or the apple), position
- * the gameSquare on the screen.
- */
-function repositionSquare(square) {
-  var squareElement = square.element;
-  var row = square.row;
-  var column = square.column;
-
-  var buffer = 20;
-
-  // position the square on the screen according to the row and column
-  squareElement.css("left", column * SQUARE_SIZE + buffer);
-  squareElement.css("top", row * SQUARE_SIZE + buffer);
-}
-
 /* Returns a (row,column) Object that is not occupied by another game component
  */
 function getRandomAvailablePosition() {
@@ -333,8 +326,8 @@ function getRandomAvailablePosition() {
       spaceIsAvailable to false so that a new position is generated.
     */
     for (part of snake.body) {
-      if (part.row != row) continue;
-      if (part.column == column) break root;
+      if (part.column != column) continue;
+      if (part.row == row) break root;
     }
     return { column, row };
   }
