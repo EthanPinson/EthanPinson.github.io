@@ -6,16 +6,27 @@ body {
 #board {
   width: 440px;
   height: 440px;
-  border: 1px solid white;
+  border: 2px solid white;
   background-color: black;
   position: relative;
 }
 
-#gameItem {
-  background-color: teal;
+.walker {
   width: 50px;
   height: 50px;
   position: absolute;
-/*   left: 100px; */  /* Uncomment if you want to set a "starting" position */
-/*   top: 100px;  */  /* Uncomment if you want to set a "starting" position */
+  mix-blend-mode: difference;
+}
+
+intersect-space {
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  isolation: isolate;
+}
+
+intersect-space > div {
+  position: absolute;
+  border: 1px white solid;
+  margin: 1px;
 }

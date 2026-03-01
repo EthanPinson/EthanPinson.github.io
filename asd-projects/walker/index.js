@@ -10,9 +10,27 @@ function runProgram(){
   // Constant Variables
   var FRAME_RATE = 60;
   var FRAMES_PER_SECOND_INTERVAL = 1000 / FRAME_RATE;
-  
-  // Game Item Objects
 
+  const idkman = { '-1': [null, null], 0: [null, -5], 1: [-5, null], 2: [null, 5], 3: [5, null] };
+
+  const $WALKERS = $('.walker').map((_, e) => $(e))
+    .each((_, $walker) => {
+      $walker.speed_x = $walker.speed_y = 0;
+
+      const pos = $walker.pos = $walker.attr('pos').split(',').map(Number);
+      $walker.css({ left: `${pos[0]}px`, top: `${pos[1]}px` });
+
+      $walker.controls = $walker.attr('control').split(',').map(Number)
+      $walker.css('background', $walker.attr('bg'));
+
+      $walker.speed = function({ which }, up) {
+        const i = this.controls.indexOf(which);
+        if (speed_x = idkman[String(i)][0]) this.speed_x = up ? 0 : speed_x;
+        if (speed_y = idkman[String(i)][1]) this.speed_y = up ? 0 : speed_y;
+      }
+    })
+
+  const $board = $('#board');
 
   // one-time setup
   var interval = setInterval(newFrame, FRAMES_PER_SECOND_INTERVAL);   // execute newFrame every 0.0166 seconds (60 Frames per second)
@@ -23,7 +41,6 @@ function runProgram(){
 
   Note: You can have multiple event listeners for different types of events.
   */
-  $(document).on('eventType', handleEvent);                          
 
   ////////////////////////////////////////////////////////////////////////////////
   ///////////////////////// CORE LOGIC ///////////////////////////////////////////
@@ -34,8 +51,10 @@ function runProgram(){
   by calling this function and executing the code inside.
   */
   function newFrame() {
-    
-
+    $WALKERS.each((_, $w) => move($w))
+    $WALKERS.each((_, $w) => wall_collision($w, 0, 'width'))
+    $WALKERS.each((_, $w) => wall_collision($w, 1, 'height'))
+    $WALKERS.each((_, $w) => draw($w))
   }
   
   /* 
@@ -44,9 +63,8 @@ function runProgram(){
   
   Note: You can have multiple event handlers for different types of events.
   */
-  function handleEvent(event) {
-
-  }
+  $(document).on('keydown', e => $WALKERS.each((_, $w) => $w.speed(e, false)));
+  $(document).on('keyup', e => $WALKERS.each((_, $w) => $w.speed(e, true)));
 
   ////////////////////////////////////////////////////////////////////////////////
   ////////////////////////// HELPER FUNCTIONS ////////////////////////////////////
@@ -60,5 +78,21 @@ function runProgram(){
     // turn off event handlers
     $(document).off();
   }
-  
+
+  function move($walker) {
+    $walker.pos[0] += $walker.speed_x;
+    $walker.pos[1] += $walker.speed_y;
+  }
+
+  function draw($walker) {
+    $walker.css({
+      left: $walker.pos[0],
+      top: $walker.pos[1]
+    })
+  }
+
+  function wall_collision($walker, a, b) {
+    $walker.pos[a] = Math.min($walker.pos[a] + $walker[b](), $board[b]());
+    $walker.pos[a] = Math.max($walker.pos[a] - $walker[b](), 0);
+  }
 }
