@@ -116,12 +116,14 @@ function runProgram(){
     ]
 
     // compare center with all other centers to determine collision
+    // doing this every frame instead of only updating when positions change is dumb but i dont got time for that
     $WALKERS.each((i, $w) => {
       // walker target vs origin info
       if (String(i) == $walker.attr('id')) return;
       const id = `Block ${i} touches Block ${$walker.attr('id')}`
 
       // get offsets
+      // ignore the possibility of simplifying this
       const x = Math.abs($walker.cent[0] - $w.cent[0]);
       const y = Math.abs($walker.cent[1] - $w.cent[1]);
 
