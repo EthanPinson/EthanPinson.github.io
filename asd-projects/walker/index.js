@@ -11,25 +11,36 @@ function runProgram(){
   var FRAME_RATE = 60;
   var FRAMES_PER_SECOND_INTERVAL = 1000 / FRAME_RATE;
 
-  const idkman = { '-1': [null, null], 0: [null, -5], 1: [-5, null], 2: [null, 5], 3: [5, null] };
+  // maps controls to velocity changes
+  // 0=up 1=left 2=down 3=right
+  // (null = no change) (-1 is used for no match on key input)
+  const control_map = { '-1': [null, null], 0: [null, -5], 1: [-5, null], 2: [null, 5], 3: [5, null] };
 
+  // iterate over all walkers and do logic
   const $WALKERS = $('.walker').map((_, e) => $(e))
     .each((_, $walker) => {
+      // set speeds to zero
       $walker.speed_x = $walker.speed_y = 0;
 
+      // get predefined position and draw walker there
       const pos = $walker.pos = $walker.attr('pos').split(',').map(Number);
       $walker.css({ left: `${pos[0]}px`, top: `${pos[1]}px` });
 
-      $walker.controls = $walker.attr('control').split(',').map(Number)
+      // parse the controls
+      $walker.controls = $walker.attr('control').split(',').map(Number);
+
+      // set background color
       $walker.css('background', $walker.attr('bg'));
 
+      // function that handles key inputs and assigns velocity
       $walker.speed = function({ which }, up) {
         const i = this.controls.indexOf(which);
-        if (speed_x = idkman[String(i)][0]) this.speed_x = up ? 0 : speed_x;
-        if (speed_y = idkman[String(i)][1]) this.speed_y = up ? 0 : speed_y;
+        if (speed_x = control_map[String(i)][0]) this.speed_x = up ? 0 : speed_x;
+        if (speed_y = control_map[String(i)][1]) this.speed_y = up ? 0 : speed_y;
       }
     })
 
+  // get the board
   const $board = $('#board');
 
   // one-time setup
@@ -79,18 +90,21 @@ function runProgram(){
     $(document).off();
   }
 
+  // moves a walker depending on its velocity
   function move($walker) {
     $walker.pos[0] += $walker.speed_x;
     $walker.pos[1] += $walker.speed_y;
   }
 
+  // draws the walker in its new spot
   function draw($walker) {
     $walker.css({
       left: $walker.pos[0],
       top: $walker.pos[1]
-    })
+    });
   }
 
+  // checks for collision with walls
   function wall_collision($walker, a, b) {
     $walker.pos[a] = Math.min($walker.pos[a] + $walker[b](), $board[b]());
     $walker.pos[a] = Math.max($walker.pos[a] - $walker[b](), 0);
