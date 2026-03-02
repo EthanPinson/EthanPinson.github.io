@@ -104,43 +104,32 @@ function runProgram(){
     $(document).off();
   }
 
-  // moves a walker depending on its velocity
+  // moves a walker depending on its velocity and checks other walkers
   function move($walker) {
     $walker.pos[0] += $walker.speed_x;
     $walker.pos[1] += $walker.speed_y;
 
+    // set the center of the walker for collision detection
     $walker.cent = [
       $walker.pos[0] + $walker.width()/2,
       $walker.pos[1] + $walker.height()/2
     ]
 
+    // compare center with all other centers to determine collision
     $WALKERS.each((i, $w) => {
+      // walker target vs origin info
       if (String(i) == $walker.attr('id')) return;
-      const id = `"${i},${$walker.attr('id')}"`
+      const id = `Block ${i} touches Block ${$walker.attr('id')}`
 
+      // get offsets
       const x = Math.abs($walker.cent[0] - $w.cent[0]);
       const y = Math.abs($walker.cent[1] - $w.cent[1]);
 
-      if (x > 50 || y > 50) return $(`p[id=${id}]`).remove()
-      if (!$(`p[id=${id}]`).length) $(`<p id=${id}>`)
-        .text(`Block ${$walker.attr('id')} touches block ${i}`)
+      // if not close enough, dont make text; otherwise do
+      if (x > 50 || y > 50) return $(`p[id="${id}"]`).remove()
+      if (!$(`p[id="${id}"]`).length) $(`<p id="${id}">`)
+        .text(id)
         .appendTo('body');
-    //   if ($walker.attr('id') == $w.attr('id')) return;
-
-    //   const what = (
-    //     $w.pos[0] + $w.width() / 2
-    //   )
-
-
-    //   const haha = $w.pos[0] + $w.width() / 2;
-
-    //   console.log(Math.sqrt(Math.pow()))
-
-    //   const lol = $w.pos[1] + $w.height() / 2;
-    //   //console.log(`${haha}, ${lol}`);
-
-
-    //   //console.log('yes');
     })
   }
 
