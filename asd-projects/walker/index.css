@@ -19,3 +19,10 @@ body {
   position: absolute;
   mix-blend-mode: difference;
 }
+
+p {
+  font-size: 15px;
+  font-family: monospace;
+  color: white;
+  text-shadow: black 0px 0px 5px;
+}

@@ -18,9 +18,14 @@ function runProgram(){
 
   // iterate over all walkers and do logic
   const $WALKERS = $('.walker').map((_, e) => $(e))
-    .each((_, $walker) => {
+    .each((i, $walker) => {
+      $walker.attr('id', i);
+
       // set speeds to zero
       $walker.speed_x = $walker.speed_y = 0;
+
+      // set placeholder center
+      $walker.cent = [i * 100, i * 100];
 
       // get predefined position and draw walker there
       const pos = $walker.pos = $walker.attr('pos').split(',').map(Number);
@@ -62,10 +67,10 @@ function runProgram(){
   by calling this function and executing the code inside.
   */
   function newFrame() {
-    $WALKERS.each((_, $w) => move($w))
-    $WALKERS.each((_, $w) => wall_collision($w, 0, 'width'))
-    $WALKERS.each((_, $w) => wall_collision($w, 1, 'height'))
-    $WALKERS.each((_, $w) => draw($w))
+    $WALKERS.each((_, $w) => move($w));
+    $WALKERS.each((_, $w) => wall_collision($w, 0, 'width'));
+    $WALKERS.each((_, $w) => wall_collision($w, 1, 'height'));
+    $WALKERS.each((_, $w) => draw($w));
   }
   
   /* 
@@ -77,9 +82,18 @@ function runProgram(){
   $(document).on('keydown', e => $WALKERS.each((_, $w) => $w.speed(e, false)));
   $(document).on('keyup', e => $WALKERS.each((_, $w) => $w.speed(e, true)));
 
+  // register random color to on click
+  $(document).on('click', rng_color);
+
   ////////////////////////////////////////////////////////////////////////////////
   ////////////////////////// HELPER FUNCTIONS ////////////////////////////////////
   ////////////////////////////////////////////////////////////////////////////////
+
+  // function to assign a random color to a random walker
+  function rng_color() {
+    const $walker = $WALKERS.get(Math.floor(Math.random() * $WALKERS.length));
+    $walker.css('filter', `hue-rotate(${Math.random() * 360}deg)`);
+  }
 
   
   function endGame() {
@@ -94,6 +108,40 @@ function runProgram(){
   function move($walker) {
     $walker.pos[0] += $walker.speed_x;
     $walker.pos[1] += $walker.speed_y;
+
+    $walker.cent = [
+      $walker.pos[0] + $walker.width()/2,
+      $walker.pos[1] + $walker.height()/2
+    ]
+
+    $WALKERS.each((i, $w) => {
+      if (String(i) == $walker.attr('id')) return;
+      const id = `"${i},${$walker.attr('id')}"`
+
+      const x = Math.abs($walker.cent[0] - $w.cent[0]);
+      const y = Math.abs($walker.cent[1] - $w.cent[1]);
+
+      if (x > 50 || y > 50) return $(`p[id=${id}]`).remove()
+      if (!$(`p[id=${id}]`).length) $(`<p id=${id}>`)
+        .text(`Block ${$walker.attr('id')} touches block ${i}`)
+        .appendTo('body');
+    //   if ($walker.attr('id') == $w.attr('id')) return;
+
+    //   const what = (
+    //     $w.pos[0] + $w.width() / 2
+    //   )
+
+
+    //   const haha = $w.pos[0] + $w.width() / 2;
+
+    //   console.log(Math.sqrt(Math.pow()))
+
+    //   const lol = $w.pos[1] + $w.height() / 2;
+    //   //console.log(`${haha}, ${lol}`);
+
+
+    //   //console.log('yes');
+    })
   }
 
   // draws the walker in its new spot
