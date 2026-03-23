@@ -1,14 +1,5 @@
-
 body {
   background-color: darkgreen;
-}
-
-#board {
-  width: 440px;
-  height: 440px;
-  border: 1px solid white;
-  background-color: black;
-  position: relative;
 }
 
 #gameItem {
@@ -18,4 +9,26 @@ body {
   position: absolute;
 /*   left: 100px; */  /* Uncomment if you want to set a "starting" position */
 /*   top: 100px;  */  /* Uncomment if you want to set a "starting" position */
+}
+
+/* middle line divider */
+#divider {
+  --thickness: 5px;
+  --overhang: 200px;
+  border: var(--thickness) white;
+  border-style: none none none dashed;
+  width: 0;
+  height: calc(100% + var(--overhang));
+  top: calc(-0.5 * var(--overhang));
+  position: absolute;
+  margin-left: calc(50% - var(--thickness) / 2);
+}
+
+#board {
+  width: 440px;
+  height: 440px;
+  border: 1px solid white;
+  background: black;
+  position: relative;
+  overflow: hidden;
 }
