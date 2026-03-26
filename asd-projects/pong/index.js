@@ -2,33 +2,6 @@
 
 $(document).ready(runProgram); // wait for the HTML / CSS elements of the page to fully load, then execute runProgram()
 
-// function pluck_divider() {
-//   const overhang = parseFloat($('#divider').css('--overhang'));
-
-//   const target = Math.random() * overhang;
-
-//   const impact = (overhang - target) / overhang;
-
-//   console.log(impact);
-
-//   console.log(overhang);
-
-
-//   // console.log($('#divider').css('--overhang'))
-//   const num = Math.random() * -1 * parseFloat($('#divider').css('--overhang'));
-//   // console.log(num);
-//   $('#divider').animate({
-//       top: -target + 'px'
-//     },
-//     {
-//       step: function( now, fx ) {
-//         //console.log('now', now);
-//         //console.log('fx', fx);
-//       },
-//       duration: Math.max((1 - impact) * 1000, 500)
-//     })
-// }
-
 function Paddle($board, ball, is_ai) {
   const $$ = $('<div class=paddle>').appendTo($board);
 
@@ -46,32 +19,23 @@ function Paddle($board, ball, is_ai) {
     const ball_side_x = ball.$$.position().left
       + (!is_ai ? 0 : ball.$$.outerWidth());
 
+    const d_x = (ball_side_x - paddle_side_x) * (is_ai ? -1 : 1);
 
+    const d_y = -ball.$$.position().top - ball.$$.height() / 2
+      + $$.position().top + $$.height() / 2;
 
-    // var haha = $$.position().left + ($$.outerWidth() - $$.innerWidth()) / 2
-    // haha += is_ai ? 0 : $$.innerWidth()
+    // TODO!: SET BOUNDS ON Y COORD
 
-    // var what = ball.$$.position().left + ball.$$.outerWidth() * (is_ai ? 1 : 0)
-    
-    // console.log('haha', haha);
-    // console.log('what', what);
-    // console.log('what-haha', what - haha);
-    if ((is_ai ? (-ball_side_x + paddle_side_x) : (ball_side_x - paddle_side_x)) > 0) return console.log('what');
-    console.log('flipping');
-    ball.speed_x *= -1;
+    if (d_x < 0 && Math.abs(d_y) < $$.outerHeight() / 2) ball.speed_x *= -1;
 
-    //console.log($element.position().left + $element.width() * (is_ai ? 0 : 1))
-
-    // if (!is_ai) return;
-    // let d_y = $element.position().top + $element.height() / 2;
-    // d_y -= ball.$element.position().top + ball.$element.height() / 2;
-    // item.speed_y = -Math.sign(d_y) * 0.5;
+    if (!is_ai) return;
+    item.speed_y = -Math.sign(d_y) * 0.5 * 20;
   }
 
   return { $$, speed_x: 0, speed_y: 0, logic }
 }
 
-function Ball($board, speed_x, speed_y) {
+function Ball($board) {
   const $$ = $('<div id=ball>').appendTo($board);
 
   $$.css({
@@ -80,11 +44,23 @@ function Ball($board, speed_x, speed_y) {
   });
 
   function logic(item) {
-    // $("#haha").text($element.offset().left)
-    //console.log($element);
+    if (
+      $$.position().top < 0 ||
+      $$.position().top + $$.outerHeight() > $board.height()
+    ) item.speed_y *= -1;
+
+    if (
+      $$.position().left < -$$.outerWidth() ||
+      $$.position().left > $board.width() + $$.outerWidth()
+    ) $$.css('left', $board.width() / 2 - $$.outerWidth() / 2)
   }
 
-  return { $$, speed_x, speed_y, logic }
+  return {
+    $$,
+    speed_x: 2 * Math.sign(Math.random() * 2 - 1),
+    speed_y: 2 * Math.sign(Math.random() * 2 - 1),
+    logic
+  }
 }
 
 function runProgram() {
@@ -98,7 +74,7 @@ function runProgram() {
   
   // Game Item Objects
   const $board = $('#board');
-  const ball = Ball($board, -5, 0);
+  const ball = Ball($board);
 
   // one-time setup
   const interval = setInterval(newFrame, FRAMES_PER_SECOND_INTERVAL, [
