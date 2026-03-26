@@ -29,7 +29,7 @@ function Paddle($board, ball, is_ai) {
     if (d_x < 0 && Math.abs(d_y) < $$.outerHeight() / 2) ball.speed_x *= -1;
 
     if (!is_ai) return;
-    item.speed_y = -Math.sign(d_y) * 0.5 * 20;
+    item.speed_y = -Math.sign(d_y) * 0.5;
   }
 
   return { $$, speed_x: 0, speed_y: 0, logic }
@@ -38,10 +38,13 @@ function Paddle($board, ball, is_ai) {
 function Ball($board) {
   const $$ = $('<div id=ball>').appendTo($board);
 
-  $$.css({
+  const center = () => $$.css({
     left: $board.width() / 2 - $$.outerWidth() / 2,
     top: $board.height() / 2 - $$.outerHeight() / 2
   });
+
+  const rng_speed = () => 2 * Math.sign(Math.random() * 2 - 1);
+  center();
 
   function logic(item) {
     if (
@@ -52,13 +55,17 @@ function Ball($board) {
     if (
       $$.position().left < -$$.outerWidth() ||
       $$.position().left > $board.width() + $$.outerWidth()
-    ) $$.css('left', $board.width() / 2 - $$.outerWidth() / 2)
+    ) {
+      center();
+      item.speed_x = rng_speed();
+      item.speed_y = rng_speed();
+    }
   }
 
   return {
     $$,
-    speed_x: 2 * Math.sign(Math.random() * 2 - 1),
-    speed_y: 2 * Math.sign(Math.random() * 2 - 1),
+    speed_x: rng_speed(),
+    speed_y: rng_speed(),
     logic
   }
 }
