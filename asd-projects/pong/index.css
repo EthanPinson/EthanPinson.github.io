@@ -1,3 +1,5 @@
+:root { font-family: monospace }
+
 body {
   background-color: rgb(16, 0, 54);
 }
@@ -60,12 +62,16 @@ body {
 #score > span {
   position: relative;
   color: white;
-  font-family: monospace;
   font-size: 30px;
 }
 
 /* the title text at the top */
 h1 {
   color: white;
-  font-family: monospace;
+}
+
+/* tiny text at bottom */
+h5 {
+  color: rgba(255, 255, 255, 0.623);
+  font-style: italic;
 }
