@@ -188,7 +188,7 @@ function runProgram() {
   // put game items in an array for looping
   const items = [
     Paddle($board, ball, 10, 1.1), // left paddle
-    Paddle($board, ball, 3, 1.1, true), // right paddle (ai)
+    Paddle($board, ball, 2, 1.1, true), // right paddle (ai)
     ball,
     score_keep,
     Divider($board) // visual divider (no gameplay)
