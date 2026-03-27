@@ -64,8 +64,10 @@ function Paddle($board, ball, speed, ball_speed_mod, is_ai) {
 
   // speed multipliers for keys
   const key_mults = {
-    87: -1, // up
-    83: 1 // down
+    87: -1, // up (W)
+    38: -1, // up (up arrow)
+    83: 1, // down (S)
+    40: 1 // down (down arrow)
   };
 
   function keydown({ which }) {
