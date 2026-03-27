@@ -182,13 +182,13 @@ function runProgram() {
   
   // Game Item Objects
   const $board = $('#board'); // the board
-  const score_keep = ScoreKeep($board, 2); // score keeper
+  const score_keep = ScoreKeep($board, 7); // score keeper
   const ball = Ball($board, score_keep, 3); // the ball
 
   // put game items in an array for looping
   const items = [
     Paddle($board, ball, 10, 1.1), // left paddle
-    Paddle($board, ball, 2, 1.1, true), // right paddle (ai)
+    Paddle($board, ball, 2.5, 1.1, true), // right paddle (ai)
     ball,
     score_keep,
     Divider($board) // visual divider (no gameplay)
