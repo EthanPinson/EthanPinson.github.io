@@ -2,11 +2,6 @@
 
 $(document).ready(runProgram); // wait for the HTML / CSS elements of the page to fully load, then execute runProgram()
 
-const KEYS = {
-  87: -1,
-  83: 1
-};
-
 function Paddle($board, ball, speed, ball_speed_mod, is_ai) {
   const $$ = $('<div class=paddle>').appendTo($board);
 
@@ -34,34 +29,70 @@ function Paddle($board, ball, speed, ball_speed_mod, is_ai) {
   }
 
   function logic(item) {
+    // where the ball-facing point on the paddle is
     const paddle_side_x = $$.position().left
       + ($$.outerWidth() - $$.innerWidth()) / 2
       + (is_ai ? 0 : $$.innerWidth());
 
+    // where the paddle-facing point on the ball is
     const ball_side_x = ball.$$.position().left
       + (!is_ai ? 0 : ball.$$.outerWidth());
 
+    // distance from ball-facing face to paddle-facing point on ball
     const d_x = (ball_side_x - paddle_side_x) * (is_ai ? -1 : 1);
 
+    // distance from middle of the ball to the center of the paddle
     const d_y = -ball.$$.position().top - ball.$$.height() / 2
       + $$.position().top + $$.height() / 2;
 
+    // if ball hits paddle, reverse ball x-speed
     if (d_x < 0 && Math.abs(d_y) < $$.outerHeight() / 2)
       ball.speed_x *= -ball_speed_mod;
 
+    // if paddle is ai, set its speed so it follows the ball
     if (!is_ai) return;
     item.speed_y = cap_y_speed(-Math.sign(d_y) * speed);
   }
 
+  // speed multipliers for keys
+  const key_mults = {
+    87: -1, // up
+    83: 1 // down
+  };
+
   function keydown({ which }) {
     if (is_ai) return; // ai cannot be controlled
-    $$.css('top', `+=${cap_y_speed(KEYS[which] * speed)}`)
+    $$.css('top', `+=${cap_y_speed(key_mults[which] * speed)}`)
   }
 
   return { $$, speed_x: 0, speed_y: 0, logic, keydown }
 }
 
-function Ball($board, speed_mult) {
+function ScoreKeep($board, max_score) {
+  const $$ = $('<div id=score>').appendTo($board);
+
+  // add the visual numbers to the score keep
+  $('<span id=left_score>').appendTo($$);
+  $('<span id=right_score>').appendTo($$);
+
+  // score values; index 0 is left, index 1 is right
+  const score = [0, 0];
+
+  function logic() {
+    // set score display
+    $('#left_score').text(score[0]);
+    $('#right_score').text(score[1]);
+
+    // if a player has more than max_score, reset game
+    if ((big_score = Math.max(...score)) < max_score) return;
+    alert(`Player ${score.indexOf(big_score) + 1} wins with ${score.join(':')} points!!`);
+    score[0] = score[1] = 0;
+  }
+
+  return { $$, logic, score }
+}
+
+function Ball($board, score_keep, speed_mult) {
   const $$ = $('<div id=ball>').appendTo($board);
 
   // function that returns the ball to the center
@@ -77,15 +108,22 @@ function Ball($board, speed_mult) {
   center();
 
   function logic(item) {
+    // top and bottom wall bounce logic (reverse y-speed)
     if (
       $$.position().top < 0 ||
       $$.position().top + $$.outerHeight() > $board.height()
     ) item.speed_y *= -1;
 
+    // ball going offscreen logic
     if (
       $$.position().left < -$$.outerWidth() ||
       $$.position().left > $board.width() + $$.outerWidth()
     ) {
+
+      // trigger addition of point to appropriate player
+      score_keep.score[Number($$.position().left < 0)] += 1;
+
+      // send ball to center and randomize its speed
       center();
       item.speed_x = rng_speed();
       item.speed_y = rng_speed();
@@ -100,6 +138,11 @@ function Ball($board, speed_mult) {
   }
 }
 
+// divider game element (visual only)
+function Divider($board) {
+  $('<div id=divider>').appendTo($board);
+}
+
 function runProgram() {
   ////////////////////////////////////////////////////////////////////////////////
   //////////////////////////// SETUP /////////////////////////////////////////////
@@ -111,23 +154,24 @@ function runProgram() {
   
   // Game Item Objects
   const $board = $('#board');
-  const ball = Ball($board, 3);
-
-  $("#test").on('click', () => { ball.$$.css('top', '999px')})
+  const score_keep = ScoreKeep($board, 2)
+  const ball = Ball($board, score_keep, 3);
 
   const items = [
     Paddle($board, ball, 10, 1.1),
     Paddle($board, ball, 3, 1.1, true),
-    ball
+    ball,
+    score_keep,
+    Divider($board)
   ];
+
+  // register keybinds for game objects
   items.forEach(item => $('body').on('keydown', (event) => {
-    (item.keydown || (() => {}))(event)
+    (item?.keydown || (() => {}))(event)
   }));
 
   // one-time setup
   const interval = setInterval(newFrame, FRAMES_PER_SECOND_INTERVAL, items);
-
-  $(document).on('eventType', handleEvent);                           // change 'eventType' to the type of event you want to handle
 
   ////////////////////////////////////////////////////////////////////////////////
   ///////////////////////// CORE LOGIC ///////////////////////////////////////////
@@ -139,11 +183,14 @@ function runProgram() {
   */
   function newFrame(items) {
     for (const item of items) {
+      if (!item?.$$) continue;
+      // move it according to velocity
       item.$$.css({
-        left: `+=${item.speed_x}`,
-        top: `+=${item.speed_y}`
+        left: `+=${item.speed_x || 0}`,
+        top: `+=${item.speed_y || 0}`
       });
-      item.logic(item);
+      // call its logic
+      (item.logic || (() => {}))(item);
     }
   }
   
@@ -151,7 +198,7 @@ function runProgram() {
   Called in response to events.
   */
   function handleEvent(event) {
-
+    // nah
   }
 
   ////////////////////////////////////////////////////////////////////////////////

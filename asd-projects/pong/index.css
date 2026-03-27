@@ -1,14 +1,5 @@
 body {
-  background-color: darkgreen;
-}
-
-#gameItem {
-  background-color: teal;
-  width: 50px;
-  height: 50px;
-  position: absolute;
-/*   left: 100px; */  /* Uncomment if you want to set a "starting" position */
-/*   top: 100px;  */  /* Uncomment if you want to set a "starting" position */
+  background-color: rgb(16, 0, 54);
 }
 
 /* board */
@@ -29,6 +20,7 @@ body {
   width: 0;
   height: 100%;
   margin-left: calc(50% - 5px / 2);
+  top:0px
 }
 
 /* pong ball */
@@ -42,10 +34,37 @@ body {
   z-index: 2
 }
 
+/* paddles */
 .paddle {
   width: 15px;
   height: 150px;
   background: white;
   border: 10px solid;
   border-radius: 999px;
+}
+
+/* score keeper */
+#score {
+  justify-content: space-between;
+  display: flex;
+  margin-left: auto;
+  margin-right: auto;
+  position: relative;
+  margin-top: 10px;
+  height: 50px;
+  width: 100px;
+}
+
+/* number in score keeper */
+#score > span {
+  position: relative;
+  color: white;
+  font-family: monospace;
+  font-size: 30px;
+}
+
+/* the title text at the top */
+h1 {
+  color: white;
+  font-family: monospace;
 }
