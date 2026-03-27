@@ -2,6 +2,14 @@
 
 $(document).ready(runProgram); // wait for the HTML / CSS elements of the page to fully load, then execute runProgram()
 
+/**
+ * paddles game object
+ * @param {*} $board the board
+ * @param {*} ball the ball
+ * @param {number} speed the speed at which the paddle moves (ai should be scaled / 10)
+ * @param {number} ball_speed_mod what to multiply the ball x-speed by when colliding
+ * @param {boolean} is_ai is the paddle controlled by AI
+ */
 function Paddle($board, ball, speed, ball_speed_mod, is_ai) {
   const $$ = $('<div class=paddle>').appendTo($board);
 
@@ -61,13 +69,22 @@ function Paddle($board, ball, speed, ball_speed_mod, is_ai) {
   };
 
   function keydown({ which }) {
-    if (is_ai) return; // ai cannot be controlled
+    // ai cannot be controlled
+    if (is_ai) return;
+    // move paddle up or down but not off-screen
+    // this is a horrible way to do this
+    // (many keydowns per frame makes many css changes per frame makes lag!)
     $$.css('top', `+=${cap_y_speed(key_mults[which] * speed)}`)
   }
 
   return { $$, speed_x: 0, speed_y: 0, logic, keydown }
 }
 
+/**
+ * score keeper game object
+ * @param {*} $board the board
+ * @param {number} max_score the max score a player can have before game end
+ */
 function ScoreKeep($board, max_score) {
   const $$ = $('<div id=score>').appendTo($board);
 
@@ -84,6 +101,7 @@ function ScoreKeep($board, max_score) {
     $('#right_score').text(score[1]);
 
     // if a player has more than max_score, reset game
+    // this code is stupid
     if ((big_score = Math.max(...score)) < max_score) return;
     alert(`Player ${score.indexOf(big_score) + 1} wins with ${score.join(':')} points!!`);
     score[0] = score[1] = 0;
@@ -92,7 +110,13 @@ function ScoreKeep($board, max_score) {
   return { $$, logic, score }
 }
 
-function Ball($board, score_keep, speed_mult) {
+/**
+ * ball game object
+ * @param {*} $board the board
+ * @param {*} score_keep the score keeper
+ * @param {number} speed initial ball speed
+ */
+function Ball($board, score_keep, speed) {
   const $$ = $('<div id=ball>').appendTo($board);
 
   // function that returns the ball to the center
@@ -104,7 +128,7 @@ function Ball($board, score_keep, speed_mult) {
 
   // gets a random speed for a speed component
   // when the ball gets reset to center
-  const rng_speed = () => speed_mult * Math.sign(Math.random() * 2 - 1);
+  const rng_speed = () => speed * Math.sign(Math.random() * 2 - 1);
   center();
 
   function logic(item) {
@@ -138,7 +162,10 @@ function Ball($board, score_keep, speed_mult) {
   }
 }
 
-// divider game element (visual only)
+/**
+ * divider game element (visual only)
+ * @param {*} $board the board
+ */
 function Divider($board) {
   $('<div id=divider>').appendTo($board);
 }
@@ -150,19 +177,19 @@ function runProgram() {
 
   // Constant Variables
   const FRAME_RATE = 60;
-  const FRAMES_PER_SECOND_INTERVAL = 1000 / FRAME_RATE;
   
   // Game Item Objects
-  const $board = $('#board');
-  const score_keep = ScoreKeep($board, 2)
-  const ball = Ball($board, score_keep, 3);
+  const $board = $('#board'); // the board
+  const score_keep = ScoreKeep($board, 2); // score keeper
+  const ball = Ball($board, score_keep, 3); // the ball
 
+  // put game items in an array for looping
   const items = [
-    Paddle($board, ball, 10, 1.1),
-    Paddle($board, ball, 3, 1.1, true),
+    Paddle($board, ball, 10, 1.1), // left paddle
+    Paddle($board, ball, 3, 1.1, true), // right paddle (ai)
     ball,
     score_keep,
-    Divider($board)
+    Divider($board) // visual divider (no gameplay)
   ];
 
   // register keybinds for game objects
@@ -171,7 +198,7 @@ function runProgram() {
   }));
 
   // one-time setup
-  const interval = setInterval(newFrame, FRAMES_PER_SECOND_INTERVAL, items);
+  const interval = setInterval(newFrame, 1000 / FRAME_RATE, items);
 
   ////////////////////////////////////////////////////////////////////////////////
   ///////////////////////// CORE LOGIC ///////////////////////////////////////////
@@ -204,7 +231,7 @@ function runProgram() {
   ////////////////////////////////////////////////////////////////////////////////
   ////////////////////////// HELPER FUNCTIONS ////////////////////////////////////
   ////////////////////////////////////////////////////////////////////////////////
-
+  // welcome to the nothing zone
   
   function endGame() {
     // stop the interval timer

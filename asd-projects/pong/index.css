@@ -10,6 +10,7 @@ body {
   background: black;
   position: relative;
   overflow: hidden;
+  border-radius: 4px;
 }
 #board * { position: absolute }
 
