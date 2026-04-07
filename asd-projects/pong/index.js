@@ -57,6 +57,10 @@ function Paddle($board, ball, speed, ball_speed_mod, is_ai) {
     if (d_x < 0 && Math.abs(d_y) < $$.outerHeight() / 2)
       ball.speed_x *= -ball_speed_mod;
 
+    // if isn't ai, cap bottom and top pos
+    if (!is_ai && $$.position().top < 0) item.speed_y = 0; 
+    if (!is_ai && $$.position().top + $$.height() + speed * 4 > $board.height()) item.speed_y = 0; 
+
     // if paddle is ai, set its speed so it follows the ball
     if (!is_ai) return;
     item.speed_y = cap_y_speed(-Math.sign(d_y) * speed);
@@ -83,13 +87,13 @@ function Paddle($board, ball, speed, ball_speed_mod, is_ai) {
     // (many keydowns per frame makes many css changes per frame makes lag!)
     if (!Object.keys(key_mults).includes(which.toString())) return;
 
-
-    // :(
-    if (($$.height() + $$.position().top > 400) && (key_mults[which]) > 0) {
+    // cap pos at bottom
+    if (($$.position().top + $$.height() + speed * 4 > $board.height()) && (key_mults[which]) > 0) {
       return item.speed_y = 0;
     }
 
-    if (($$.height() + $$.position().top < 100 ) && (key_mults[which]) < 0) {
+    // cap pos at top
+    if (($$.position().top < 0 ) && (key_mults[which]) < 0) {
       return item.speed_y = 0;
     }
     item.speed_y = key_mults[which] * speed;
