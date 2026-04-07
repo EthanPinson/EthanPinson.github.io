@@ -70,16 +70,33 @@ function Paddle($board, ball, speed, ball_speed_mod, is_ai) {
     40: 1 // down (down arrow)
   };
 
-  function keydown({ which }) {
+  function keyup({ which }, item) {
+    if (!Object.keys(key_mults).includes(which.toString())) return;
+    item.speed_y = 0;
+  }
+
+  function keydown({ which }, item) {
     // ai cannot be controlled
     if (is_ai) return;
     // move paddle up or down but not off-screen
     // this is a horrible way to do this
     // (many keydowns per frame makes many css changes per frame makes lag!)
-    $$.css('top', `+=${cap_y_speed(key_mults[which] * speed)}`)
+    if (!Object.keys(key_mults).includes(which.toString())) return;
+
+
+    // :(
+    if (($$.height() + $$.position().top > 400) && (key_mults[which]) > 0) {
+      return item.speed_y = 0;
+    }
+
+    if (($$.height() + $$.position().top < 100 ) && (key_mults[which]) < 0) {
+      return item.speed_y = 0;
+    }
+    item.speed_y = key_mults[which] * speed;
+    //$$.css('top', `+=${cap_y_speed(key_mults[which] * speed)}`)
   }
 
-  return { $$, speed_x: 0, speed_y: 0, logic, keydown }
+  return { $$, speed_x: 0, speed_y: 0, logic, keydown, keyup }
 }
 
 /**
@@ -187,7 +204,7 @@ function runProgram() {
 
   // put game items in an array for looping
   const items = [
-    Paddle($board, ball, 10, 1.1), // left paddle
+    Paddle($board, ball, 4, 1.1), // left paddle
     Paddle($board, ball, 2.5, 1.1, true), // right paddle (ai)
     ball,
     score_keep,
@@ -195,9 +212,14 @@ function runProgram() {
   ];
 
   // register keybinds for game objects
-  items.forEach(item => $('body').on('keydown', (event) => {
-    (item?.keydown || (() => {}))(event)
-  }));
+  items.forEach(item => {
+    $('body').on('keydown', (event) => {
+      (item?.keydown || (() => {}))(event, item);
+    });
+    $('body').on('keyup', event => {
+      (item?.keyup || (() => {}))(event, item);
+    });
+  });
 
   // one-time setup
   const interval = setInterval(newFrame, 1000 / FRAME_RATE, items);
