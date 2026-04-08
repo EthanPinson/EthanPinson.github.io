@@ -14,16 +14,47 @@ The CSS ids you will work with are:
 ///////////////////////////////////////////////////////////////////////
 
 // TODO 2: Implement bubbleSort
-
+async function bubbleSort(array) {
+    let is_sorted = false;
+    while (!is_sorted) {
+        is_sorted = true;
+        for (let i = 1; i < array.length; i++) {
+            if (array[i - 1].value < array[i].value) continue;
+            is_sorted = false;
+            swap(array, i - 1, i);
+            updateCounter(bubbleCounter);
+            await sleep();
+        }
+    }
+}
 
 // TODO 3: Implement quickSort
-
+async function quickSort(array, left, right) {
+    if (right - left < 0) return;
+    let index = await partition(array, left, right);
+    if (left < index - 1) await quickSort(array, left, index - 1);
+    if (index < right) await quickSort(array, index, right);
+}
 
 // TODOs 4 & 5: Implement partition
-
+async function partition(array, left, right) {
+    let pivot = array[Math.floor((right + left) / 2)].value;
+    while (left < right) {
+        while (array[left].value < pivot) { left++ }
+        while (array[right].value > pivot) { right-- }
+        if (left > right) continue;
+        swap(array, left, right);
+        updateCounter(quickCounter);
+        await sleep();
+    }
+    return left + 1;
+}
 
 // TODO 1: Implement swap
-
+function swap(array, i, j) {
+    [array[i], array[j]] = [array[j], array[i]];
+    drawSwap(array, i, j);
+}
 
 ///////////////////////////////////////////////////////////////////////
 /////////////////////// YOUR WORK GOES ABOVE HERE /////////////////////
